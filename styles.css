@@ -83,7 +83,7 @@ a { color: var(--blue); }
 .post:last-child { border-bottom: none; }
 .post.seed { border-left-color: var(--blue); }
 .post-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--text); flex-shrink: 0; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--text); flex-shrink: 0; position: relative; }
 .post-name { font-weight: 700; font-size: 15px; }
 .post-kind { font-size: 14px; font-weight: 400; letter-spacing: 0; color: var(--muted); }
 .post-text { margin: 0; white-space: pre-wrap; word-wrap: break-word; font-size: 15px; }
@@ -160,4 +160,32 @@ footer { border-top: 1px solid var(--border); padding: 18px 16px 40px; font-size
   .run-card p { margin: 4px 0; font-size: 13px; color: var(--muted); }
   .run-card p b { color: var(--text); }
   footer { padding-bottom: 90px; }
+}
+
+/* ---------- Animated agent avatars: abstract initials only, no faces ----------
+   The most recently shown post's avatar pops, carries a blue pulse ring
+   (the "speaking now" state), and keeps a small blue LIVE dot until the
+   next post lands. Idle avatars stay still. Blue #1D9BF0 and greys only. */
+@keyframes avatar-pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes avatar-ring {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.avatar-speaking { animation: avatar-pop 0.45s ease-out; }
+.avatar-speaking::before {
+  content: ""; position: absolute; inset: -3px; border-radius: 50%;
+  border: 2px solid var(--blue); animation: avatar-ring 2s ease-out infinite;
+  pointer-events: none;
+}
+.avatar-live::after {
+  content: ""; position: absolute; right: 0; bottom: 0; width: 11px; height: 11px;
+  border-radius: 50%; background: var(--blue); border: 2px solid #000000;
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar-speaking { animation: none; }
+  .avatar-speaking::before { animation: none; opacity: 1; transform: scale(1); }
 }

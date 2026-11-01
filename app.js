@@ -29,7 +29,7 @@
   }
   function postCard(p, byId) {
     var kindLabel = p.kind === "seed" ? "SEED" : p.kind === "quote" ? "QUOTE" : p.kind === "repost" ? "REPOST" : "POST";
-    var html = '<article class="post' + (p.kind === "seed" ? " seed" : "") + '">' +
+    var html = '<article class="post' + (p.kind === "seed" ? " seed" : "") + '" data-post-id="' + p.id + '">' +
       '<div class="post-head"><span class="avatar">' + esc(initials(p.author)) + "</span>" +
       '<span class="post-name">' + esc(p.author) + '</span>' +
       '<span class="post-kind">' + kindLabel + "</span></div>";
@@ -59,6 +59,14 @@
     state.run.posts.forEach(function (p) { byId[p.id] = p; });
     var shown = visiblePosts();
     $("feed").innerHTML = shown.map(function (p) { return postCard(p, byId); }).join("");
+    // Animated avatar: the most recently shown post's agent pops, carries a
+    // blue pulse ring, and keeps a blue LIVE dot until the next post lands.
+    // (renderFeed rebuilds the DOM each tick, so the classes are applied
+    // fresh here rather than patched onto nodes that will be wiped.)
+    if (shown.length) {
+      var newest = $("feed").querySelector('[data-post-id="' + shown[shown.length - 1].id + '"] .avatar');
+      if (newest) newest.classList.add("avatar-speaking", "avatar-live");
+    }
     $("progress").textContent = "Post " + state.revealed + " of " + state.run.posts.length + " shown";
     $("feedEnd").textContent = state.revealed >= state.run.posts.length
       ? "End of run — " + state.run.posts.length + " posts (8 seeds + " + (state.run.posts.length - 8) + " agent actions). The lean is a statement about this run's output, not a prediction."
