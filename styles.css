@@ -35,6 +35,11 @@ a { color: var(--blue); }
 .brand-sub { font-size: 12px; color: var(--muted); }
 .mode-badge { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; padding: 5px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); white-space: nowrap; }
 .mode-badge.live { color: var(--blue); border-color: var(--blue); }
+.badges { display: flex; gap: 8px; align-items: center; }
+.sim-badge { color: var(--blue); border-color: var(--blue); }
+.page-nav { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: flex; gap: 4px; }
+.page-link { color: var(--muted); text-decoration: none; padding: 8px 14px 10px; font-size: 14px; font-weight: 700; border-bottom: 2px solid transparent; }
+.page-link.active { color: var(--text); border-bottom-color: var(--blue); }
 .run-tabs { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
 .run-tab { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--muted); padding: 10px 14px; font-size: 14px; font-weight: 700; cursor: pointer; }
 .run-tab.active { color: var(--text); border-bottom-color: var(--blue); }
@@ -43,9 +48,11 @@ a { color: var(--blue); }
 /* ---------- Sticky mini lean bar (phone only) ---------- */
 .lean-sticky { display: none; }
 
-/* ---------- Layout: LAPTOP = two columns, feed + sticky sidebar ---------- */
-.layout { max-width: 1180px; margin: 0 auto; padding: 20px 16px; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start; }
-.impact-col { position: sticky; top: 118px; display: flex; flex-direction: column; gap: 16px; }
+/* ---------- Layout: FEED = one centered timeline column; WHY = one reading column ---------- */
+.feed-layout { max-width: 640px; margin: 0 auto; padding: 20px 16px; }
+.why-layout { max-width: 760px; margin: 0 auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+.why-layout h1 { margin: 4px 0 0; font-size: 24px; }
+.why-intro { margin: 0; color: var(--muted); font-size: 15px; }
 
 /* ---------- Run head + controls ---------- */
 .run-head h1 { margin: 0 0 4px; font-size: 24px; line-height: 1.2; }
@@ -85,17 +92,21 @@ a { color: var(--blue); }
 .post-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
 .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--text); flex-shrink: 0; position: relative; }
 .post-name { font-weight: 700; font-size: 15px; }
+.post-time { font-size: 14px; color: var(--muted); }
 .post-kind { font-size: 14px; font-weight: 400; letter-spacing: 0; color: var(--muted); }
 .post-text { margin: 0; white-space: pre-wrap; word-wrap: break-word; font-size: 15px; }
 .post-foot { display: flex; gap: 12px; align-items: center; justify-content: space-between; max-width: 420px; margin-top: 12px; font-size: 13px; color: var(--muted); }
+.action { display: inline-flex; align-items: center; gap: 4px; }
 .stance { font-size: 11px; font-weight: 800; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
 .stance.yes, .stance.pro, .stance.opposition { color: var(--opp); border-color: var(--opp); }
 .stance.no, .stance.sceptical, .stance.government { color: var(--gov); border-color: var(--gov); }
 .stance.conditional, .stance.neutral { color: var(--muted); }
 .quote-card { margin-top: 10px; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; background: var(--bg); }
+.quote-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.avatar-sm { width: 28px; height: 28px; font-size: 11px; }
 .quote-card .post-name { font-size: 14px; }
 .quote-card .post-text { font-size: 14px; color: var(--text); }
-.repost-note { font-size: 13px; color: var(--muted); font-style: italic; }
+.repost-by { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
 .feed-end { color: var(--muted); font-size: 13px; text-align: center; padding: 16px 0; }
 
 /* ---------- Impact panels ---------- */
@@ -143,6 +154,7 @@ footer { border-top: 1px solid var(--border); padding: 18px 16px 40px; font-size
   .lean-sticky .lean-bar { flex: 1; height: 16px; }
   .lean-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
   .layout { display: block; padding: 12px; }
+  .feed-layout, .why-layout { padding: 12px; }
   .impact-col { position: static; margin-top: 24px; }
   .run-head h1 { font-size: 21px; }
   .run-question { font-size: 16px; }

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sauti Debate Replay — Why this exists</title>
+<meta name="description" content="What Sauti is, what it would fix for SokoResult, and the honest limits of these demo runs.">
+<link rel="stylesheet" href="styles.css">
+<script src="config.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div>
+        <div class="brand-name">SAUTI <span>DEBATE REPLAY</span></div>
+        <div class="brand-sub">Kenyan debate, read like a timeline</div>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="mode-badge">RECORDED RUN</span>
+      <span class="mode-badge sim-badge">SIMULATED</span>
+    </div>
+  </div>
+  <nav class="page-nav" aria-label="Pages">
+    <a href="index.html" class="page-link">Feed</a>
+    <a href="why.html" class="page-link active">Why</a>
+  </nav>
+</header>
+
+<main class="why-layout">
+  <h1>Why this exists</h1>
+  <p class="why-intro">The Feed page shows the debates. This page explains what they are for, what they would fix, and where they fall short. The Feed page plays back complete recorded runs — real outputs from real runs, not a live wait.</p>
+
+  <div class="shadow-banner">
+    <strong>SHADOW MODE — ILLUSTRATIVE</strong>
+    <p>Sauti never sets prices, never resolves a market, never moves money. Its weight is 0 until it clears a founder-set backtest bar. Nothing on this page is wired to any market.</p>
+  </div>
+
+  <section class="panel">
+    <h2>Signal — what Sauti would fix</h2>
+    <table class="dense">
+      <thead><tr><th>Market</th><th>Today</th><th>With a debate reading</th></tr></thead>
+      <tbody>
+        <tr><td>Duale</td><td class="bad">No keywords — no signal, ever</td><td>Covered by debate positions</td></tr>
+        <tr><td>Mackenzie</td><td class="bad">No keywords — no signal, ever</td><td>Covered by debate positions</td></tr>
+        <tr><td>Karua</td><td class="bad">Shares “iebc” — moves with the others</td><td>Separated by faction reading</td></tr>
+        <tr><td>Jubilee</td><td class="bad">Shares “iebc” — moves with the others</td><td>Separated by faction reading</td></tr>
+        <tr><td>Turnout</td><td class="bad">Shares “iebc” — moves with the others</td><td>Separated by faction reading</td></tr>
+      </tbody>
+    </table>
+    <p class="panel-note">Today the house signal keys off one shared keyword. A faction-based debate reading keys off who believes what, so blind markets get covered and shared-keyword markets stop moving as one block.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Sentiment — news vs the street</h2>
+    <div class="sent-row"><span class="sent-k">News sentiment</span><span class="sent-v">What articles say</span></div>
+    <div class="sent-row"><span class="sent-k">Debate sentiment</span><span class="sent-v">What the timeline argues</span></div>
+    <p class="panel-note">When the two diverge hard, that is the “street disagrees” flag. Today the street side comes from English-only tweets. The debate side adds Sheng and Swahili-English mixed voice, so the street number actually sounds like the street. This panel shows the mechanism; it is not a live reading.</p>
+    <p class="panel-note"><strong>Example from the Kalonzo run:</strong> the cast's own condition on its lean — the opposition lean holds only with a jobs and cost-of-living plan, not just a shares calculation. That is the kind of condition news headlines do not carry.</p>
+  </section>
+
+  <section class="panel">
+    <h2>What improves</h2>
+    <ul class="improve">
+      <li><strong>Blind markets get covered.</strong> Duale and Mackenzie go from no signal to a reading.</li>
+      <li><strong>Duplicated signals get separated.</strong> Karua, Jubilee, and Turnout stop moving on the same keyword.</li>
+      <li><strong>English-only skew gets fixed.</strong> Voice references come from real mixed-language posts, not newsroom English.</li>
+      <li><strong>One flat number becomes a split.</strong> Phase 2 reads the lean by faction × age band instead of one aggregate.</li>
+      <li><strong>Amplifiers stay separate from voters.</strong> Paid praise is quarantined and modelled as amplification, never counted as grassroots belief.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>Readout — Kalonzo run</h2>
+    <p class="readout-lean" id="readoutLean"></p>
+  </section>
+
+  <section class="panel">
+    <h2>Interaction graph — the zero-follows gap</h2>
+    <p class="panel-note">Nobody has ever followed anybody in any run. Debate happens through quotes, not relationships. That is the next engine fix, not a data gap.</p>
+    <table class="dense" id="followTable">
+      <thead><tr><th>Run</th><th>Follows</th><th>Likes</th><th>Quotes</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div id="topQuoted"></div>
+  </section>
+
+  <section class="runs-section">
+    <h2>All runs — and what each one fixed</h2>
+    <div class="runs-table-wrap">
+      <table class="dense runs-table" id="runsTable">
+        <thead><tr><th>Run</th><th>Date</th><th>Model</th><th>Posts</th><th>Lean (run output, not a prediction)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="runs-cards" id="runsCards"></div>
+
+    <h3>The improvements arc</h3>
+    <ol class="arc">
+      <li><strong>Run 2 → Run 3: priming works on the surface.</strong> Code-switching 84% → 98% published, Sheng 23% → 90% published, humour arrives, posts get punchier. But grammar stays broken and one seed (“marriage of convenience”) absorbs 21 of 37 quotes.</li>
+      <li><strong>Run 3 → Run 4: grammar fixed, tone flips.</strong> Per-type voice references, a NEVER list of broken lines, and the stronger Muse Spark model fix the grammar — and the lean flips from conditional YES to NO on the same question, cast, and seeds. That flip is the artifact warning: a model change should not swing a debate this hard unless priors dominate. Wire takes 48 of 90 actions, so the thread reads as a newsroom.</li>
+      <li><strong>Run 4 → Kalonzo: same setup, new question.</strong> Opposition 53 vs government 10, with its own artifact warning (seeds lean opposition; the government side rides on the Ruto persona plus KBC News). The honest signal inside: the lean holds only with a jobs and cost-of-living plan.</li>
+    </ol>
+    <h3>Still open</h3>
+    <ul class="open-list">
+      <li>0 follows in every run — the follow graph is the next engine fix.</li>
+      <li>Newsroom tone: wire + institutional = 77% of Kalonzo actions. A voter cast (faction × age) is the fix, not more elite personas.</li>
+      <li>Sheng is thin in run 4 and Kalonzo, partly a small-lexicon measurement gap (bana, fala missed) and partly real.</li>
+      <li>Lean flips between runs are artifact warnings, not evidence about the real questions.</li>
+      <li>Blind-test ratings and the founder-set backtest bar are still pending. Until they clear, weight stays 0.</li>
+    </ul>
+  </section>
+
+  <section class="panel honesty">
+    <h2>Honesty panel</h2>
+    <ul>
+      <li>Not a prediction. Every lean on this page is a statement about that run's output.</li>
+      <li>Not wired to any market or money. Shadow mode, weight 0.</li>
+      <li>Voice quality is still improving. Grammar is fixed since run 4; newsroom tone and thin Sheng are open.</li>
+      <li>Leans come from demo runs on an elite cast — big shots and media, no ordinary voters yet.</li>
+      <li>No tribal breakdowns in any published readout. Ever.</li>
+      <li>Posts on this page are simulated. No real person's posts, no real handles.</li>
+      <li>A full run takes about 30 minutes, so this page plays back complete recorded runs — real outputs from real runs, not a live wait.</li>
+    </ul>
+    <p class="credits">Simulation engine: MiroFish (third-party open source, AGPL-3.0). Debate model: Built with Muse Spark Open.</p>
+  </section>
+</main>
+
+<footer>
+  <p>Sauti Debate Replay — a demo module for the Meta Global AI Developer Hackathon, Startup track. Simulated posts only. Built with Muse Spark Open. Engine: MiroFish (AGPL-3.0).</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
