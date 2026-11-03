@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare runs — Sauti</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: #0A0A12; color: #eee; font-family: system-ui, sans-serif; margin: 0; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 16px; }
+  .sim-banner { background: #1c1300; border: 1px solid #8a6d00; padding: 12px; margin: 12px 0; }
+  .sample-banner { background: #2a0a2e; border: 1px solid #7B2FBE; padding: 12px; margin: 12px 0; }
+  .pickers { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+  .pickers label { font-size: 14px; }
+  .pickers select { background: #1a1a2e; color: #eee; border: 1px solid #444; padding: 6px; margin-left: 6px; }
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .panels { grid-template-columns: 1fr; } }
+  .panel { border: 1px solid #333; padding: 14px; background: #12121f; }
+  .panel h2 { margin-top: 0; font-size: 18px; }
+  .bar { display: flex; height: 22px; margin: 10px 0; overflow: hidden; background: #222; }
+  .bar div { height: 100%; }
+  .seg-yes { background: #2fbf71; }
+  .seg-no { background: #e5484d; }
+  .seg-cond { background: #f5a623; }
+  .seg-open { background: #888; }
+  .seg-mixed { background: #7B2FBE; }
+  .legend { font-size: 13px; line-height: 1.7; }
+  .dot { display: inline-block; width: 10px; height: 10px; margin-right: 5px; }
+  .section { border: 1px solid #333; padding: 14px; background: #12121f; margin-top: 16px; }
+  .section h2 { margin-top: 0; font-size: 18px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  td, th { border-bottom: 1px solid #333; padding: 6px 8px; text-align: left; }
+  .muted { color: #aaa; font-size: 13px; }
+  .page-nav { display: flex; gap: 12px; padding: 12px 0; }
+  .page-link { color: #bbb; text-decoration: none; }
+  .page-link.active { color: #fff; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="page-nav" aria-label="Pages">
+    <a href="index.html" class="page-link">Feed</a>
+    <a href="why.html" class="page-link">Why</a>
+    <a href="compare.html" class="page-link active">Compare</a>
+  </nav>
+  <h1>Compare two runs</h1>
+  <div class="sim-banner" role="note"><strong>Simulated debate, not a poll.</strong> Both runs are synthetic personas, not real voters, and not evidence about any real election. Lean counts distinct agents, not posts, so one loud agent cannot outvote the room.</div>
+  <div id="sampleBanner" class="sample-banner" style="display:none"></div>
+  <div class="pickers">
+    <label>Run A <select id="selA"></select></label>
+    <label>Run B <select id="selB"></select></label>
+  </div>
+  <div id="q" class="muted"></div>
+  <div class="panels" id="panels"></div>
+  <div class="section" id="movement"></div>
+  <div class="section" id="seeds"></div>
+</div>
+<script>
+const ORDER = ["YES", "NO", "CONDITIONAL", "OPEN", "MIXED"];
+const COLORS = {YES: "seg-yes", NO: "seg-no", CONDITIONAL: "seg-cond", OPEN: "seg-open", MIXED: "seg-mixed"};
+
+function bar(counts) {
+  const total = ORDER.reduce((s, k) => s + (counts[k] || 0), 0) || 1;
+  const segs = ORDER.filter(k => counts[k]).map(k =>
+    `<div class="${COLORS[k]}" style="width:${(counts[k] / total * 100).toFixed(1)}%" title="${k} ${counts[k]}"></div>`).join("");
+  const legend = ORDER.filter(k => counts[k]).map(k =>
+    `<span><span class="dot ${COLORS[k]}"></span>${k} ${counts[k]}</span>`).join(" &nbsp; ");
+  return `<div class="bar">${segs}</div><div class="legend">${legend}</div>`;
+}
+
+function panel(run) {
+  const args = (run.top_arguments || []).map(a =>
+    `<li>${a.argument} — ${a.posts} posts${a.agents != null ? `, ${a.agents} agents` : ""}</li>`).join("")
+    || `<li class="muted">No repeated argument phrases recorded.</li>`;
+  const raw = Object.entries(run.raw_counts || {}).map(([k, v]) => `${k} ${v}`).join(", ");
+  return `<div class="panel"><h2>${run.title || run.run}</h2>
+    <div class="muted">${run.n_action_posts} action posts, ${run.n_agents_active} agents active</div>
+    <h3>Distinct agents (overlapping)</h3>${bar(run.distinct_agents_overlapping || {})}
+    <h3>Raw post counts</h3><div class="legend">${raw}</div>
+    <h3>Top arguments</h3><ul>${args}</ul></div>`;
+}
+
+fetch("data/comparison.json").then(r => r.json()).then(data => {
+  document.getElementById("q").textContent = "Question: " + data.question;
+  if (data.sample) {
+    const b = document.getElementById("sampleBanner");
+    b.style.display = "block";
+    b.textContent = "Sample data — " + (data.sample_note || "replace with readout.py output.");
+  }
+  const selA = document.getElementById("selA"), selB = document.getElementById("selB");
+  data.runs.forEach((run, i) => {
+    selA.add(new Option(run.title || run.run, i));
+    selB.add(new Option(run.title || run.run, i));
+  });
+  selB.selectedIndex = data.runs.length > 1 ? 1 : 0;
+  function render() {
+    const a = data.runs[+selA.value], b = data.runs[+selB.value];
+    document.getElementById("panels").innerHTML = panel(a) + panel(b);
+    const mv = document.getElementById("movement");
+    if (!data.movement_available) {
+      mv.innerHTML = `<h2>What moved</h2><p class="muted">${data.movement_note || "Movement data not in this file."}</p>`;
+    } else {
+      const moved = (data.agents_moved || []).map(m =>
+        `<tr><td>${m.agent}</td><td>${m.from}</td><td>${m.to}</td></tr>`).join("")
+        || `<tr><td colspan="3" class="muted">No agent changed majority stance.</td></tr>`;
+      mv.innerHTML = `<h2>What moved</h2>
+        <table><tr><th>Agent</th><th>Was</th><th>Now</th></tr>${moved}</table>
+        <p>Agents who went quiet: ${(data.agents_went_quiet || []).join(", ") || "none"}</p>
+        <p>Agents who appeared: ${(data.agents_appeared || []).join(", ") || "none"}</p>
+        <p>Arguments that disappeared: ${(data.arguments_disappeared || []).join(", ") || "none"}</p>
+        <p>Arguments that appeared: ${(data.arguments_appeared || []).join(", ") || "none"}</p>`;
+    }
+    const sd = document.getElementById("seeds");
+    if (!data.seed_changed) {
+      sd.innerHTML = `<h2>Seeds</h2><p class="muted">Both runs started from the same briefing posts.</p>`;
+    } else {
+      const added = (data.seed_added || []).map(s => `<li>${s.poster}: ${s.content}</li>`).join("");
+      const removed = (data.seed_removed || []).map(s => `<li>${s.poster}: ${s.content}</li>`).join("");
+      sd.innerHTML = `<h2>Seeds — what changed</h2>
+        <p class="muted">Added seeds in a what-if run are hypothetical scenarios, not news.</p>
+        <h3>Added</h3><ul>${added || "<li>none</li>"}</ul>
+        <h3>Removed</h3><ul>${removed || "<li>none</li>"}</ul>`;
+    }
+  }
+  selA.onchange = render; selB.onchange = render; render();
+}).catch(e => {
+  document.getElementById("panels").innerHTML = `<p>Could not load data/comparison.json: ${e}</p>`;
+});
+</script>
+</body>
+</html>

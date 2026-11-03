@@ -26,7 +26,7 @@
     "length": "229 chars / 32.0 words",
     "grammar": "Broken. Code-switching present, Swahili grammar often wrong (free model, non-fluent)."
    },
-   "lean": "Conditional YES with heavy scepticism. Sifuna CAN lead (mobilisation, voice), but support is conditional on a jobs plan.",
+   "lean": "Conditional YES with heavy scepticism (YES 8 agents vs SCEPTICAL 14 agents; 2 agents post on both sides). Sifuna CAN lead (mobilisation, voice), but support is conditional on a jobs plan.",
    "lean_note": "A statement about this run's output, not a prediction. Elite/media cast only.",
    "fixed": "Gate 1 passed: 12+ positioned posts, opposing sides present, 6+ reasoned quotes. The runner finally debates instead of echoing seeds.",
    "still_open": "Elite/media cast only — no Sifuna, Orengo, or Gachagua agents. 0 likes, 0 follows. Rate limits skipped some turns.",
@@ -450,7 +450,7 @@
     "length": "204 chars / 30.5 words",
     "grammar": "NOT fixed. Still invents verb forms (anakuweka, tunawanga, kakaunti, vimbinadamu). Ingredients, not grammar."
    },
-   "lean": "Same as run 2: conditional YES with heavy scepticism, conditional on IEBC transparency and a jobs/cost-of-living plan.",
+   "lean": "Same as run 2: conditional YES with heavy scepticism (CONDITIONAL 10 agents, SCEPTICAL 10, PRO 3, GOVERNMENT 3, NEUTRAL 6), conditional on IEBC transparency and a jobs/cost-of-living plan.",
    "lean_note": "A statement about this run's output, not a prediction. Elite/media cast only.",
    "fixed": "Priming works on the surface: near-universal code-switching, real Sheng density, humour, shorter bursts.",
    "still_open": "Grammar still broken. Template repetition: 21 of 37 quotes target seed 8 (\"marriage of convenience\" / \"divorce court\"). 0 likes, 0 follows.",
@@ -1084,7 +1084,7 @@
     "length": "356 chars / 53.8 words — nearly doubled; institutional averages 487 chars / 73 words: essays, not tweets",
     "grammar": "FIXED at the run-3 level. Zero occurrences of all six broken shapes, plus hamfikirii 0 and \"divorce court\" 0."
    },
-   "lean": "NO: Sifuna will not lead the coalition.",
+   "lean": "NO — Sifuna will not lead the coalition (NO 24 agents vs YES 1 agent; 90 tagged posts).",
    "lean_note": "STRONG ARTIFACT WARNING. The lean flipped from run 3's conditional YES on the same question, cast, and seeds with only the refs and the model changed. The NO comes overwhelmingly from wire and institutional voices repeating one assessment template. The pro side had only one persona by construction (Mawia, 3 actions). Treat this NO as a statement about this run's output, not evidence about the real question.",
    "fixed": "Grammar fixed — the founder's complaint from run 3. First likes ever (12). Seed-8 anchoring down to 43% of quotes; the run-3 meme is dead.",
    "still_open": "Newsroom tone: wire dominates (48/90), posts read as consensus, not a timeline. 0 follows. Length doubled. Blind test pending founder ratings.",
@@ -2098,7 +2098,7 @@
     "length": "350 chars / 53.0 words — institutional 436 chars / 64.4 words: essays, not tweets",
     "grammar": "FIXED again. Zero run-3 broken shapes across two runs now."
    },
-   "lean": "OPPOSITION 53 vs GOVERNMENT 10, with 19 neutral/process posts.",
+   "lean": "OPPOSITION 19 agents vs GOVERNMENT 4 agents (53 vs 10 posts, 19 neutral/process posts).",
    "lean_note": "STRONG ARTIFACT WARNING. Seeds lean opposition (4 of 8 argue the opposition side); the government side is carried almost entirely by the Ruto persona plus KBC News; the opposition template (\"principal + bargaining power + flower girl\") repeats across nearly every type. Treat this lean as a statement about this run's output, not evidence about the real question. The one honest signal inside it: the lean holds only if the opposition has a jobs and cost-of-living plan, not just a shares calculation.",
    "fixed": "Gate-1-style bar passed on all three items (63 positioned posts, 20+ opposition agents vs 4 government, many reasoned quotes). Debate chains exist (post 22 quoted 11 times in run 4; seed 5 and the DCP statement draw 5 quotes each here).",
    "still_open": "Wire (32) + institutional (31) = 77% of actions — still reads as a newsroom. 0 follows. Essay length unchanged. DCP/IEBC process chain drifts off-topic. True faction debate still needs a voter cast (faction x age), not this elite cast.",

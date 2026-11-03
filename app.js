@@ -52,7 +52,7 @@
   }
   function quotedCard(q) {
     return '<div class="quote-card"><div class="quote-head"><span class="avatar avatar-sm">' + esc(initials(q.author)) + "</span>" +
-      '<span class="post-name">' + esc(q.author) + "</span></div>" +
+      '<span class="post-name">' + esc(q.author) + '</span><span class="synthetic-label">SYNTHETIC</span></div>' +
       '<p class="post-text">' + esc(q.text) + "</p></div>";
   }
   function postCard(p, byId, counts, runDate) {
@@ -61,7 +61,7 @@
     var html = '<article class="post' + (p.kind === "seed" ? " seed" : "") + '" data-post-id="' + p.id + '">' +
       '<div class="post-head"><span class="avatar">' + esc(initials(p.author)) + "</span>" +
       '<span class="post-name">' + esc(p.author) + "</span>" + time +
-      '<span class="post-kind">' + kindLabel + "</span></div>";
+      '<span class="post-kind">' + kindLabel + '</span><span class="synthetic-label">SYNTHETIC</span></div>';
     if (p.kind === "repost") {
       // A pure repost carries no text of its own: show the original it
       // reposted, under a "reposted by" line. Nothing is invented.
@@ -114,24 +114,34 @@
   }
 
   function renderLean() {
-    var counts = {};
+    // Headline metric is distinct agents per stance; post counts secondary.
+    // An author posting under two stances counts in both stances' agent
+    // counts, so per-stance agent counts can sum past the distinct total.
+    var postCounts = {}, agentSets = {}, distinct = {};
     state.run.posts.slice(0, state.revealed).forEach(function (p) {
-      if (p.stance) counts[p.stance] = (counts[p.stance] || 0) + 1;
+      if (!p.stance) return;
+      postCounts[p.stance] = (postCounts[p.stance] || 0) + 1;
+      if (!agentSets[p.stance]) agentSets[p.stance] = {};
+      agentSets[p.stance][p.author] = true;
+      distinct[p.author] = true;
     });
-    var total = Object.keys(counts).reduce(function (a, k) { return a + counts[k]; }, 0);
     var order = ["yes", "pro", "opposition", "conditional", "neutral", "sceptical", "no", "government"];
-    var keys = order.filter(function (k) { return counts[k]; });
-    var bar = total === 0
+    var keys = order.filter(function (k) { return postCounts[k]; });
+    var agentTotal = keys.reduce(function (a, k) { return a + Object.keys(agentSets[k]).length; }, 0);
+    var tagged = keys.reduce(function (a, k) { return a + postCounts[k]; }, 0);
+    var bar = tagged === 0
       ? '<div class="lean-empty">Press Play</div>'
       : keys.map(function (k) {
-          return '<div class="lean-seg ' + k + '" style="width:' + (counts[k] / total * 100).toFixed(1) + '%" title="' + STANCE_LABEL[k] + " " + counts[k] + '"></div>';
+          var n = Object.keys(agentSets[k]).length;
+          return '<div class="lean-seg ' + k + '" style="width:' + (n / agentTotal * 100).toFixed(1) + '%" title="' + STANCE_LABEL[k] + " " + n + " agents · " + postCounts[k] + ' posts"></div>';
         }).join("");
     set("leanBarSticky", bar);
     set("leanBar", bar);
     set("leanLegend", keys.map(function (k) {
-      return "<span><b>" + STANCE_LABEL[k] + "</b> " + counts[k] + "</span>";
+      var n = Object.keys(agentSets[k]).length;
+      return "<span><b>" + STANCE_LABEL[k] + "</b> " + n + " agents · " + postCounts[k] + " posts</span>";
     }).join("") || "<span>No tagged posts shown yet.</span>");
-    setText("leanCountSticky", total ? total + " tagged" : "");
+    setText("leanCountSticky", tagged ? Object.keys(distinct).length + " agents · " + tagged + " tagged" : "");
   }
 
   function renderFilters() {
@@ -173,9 +183,9 @@
     setText("runTitle", r.title);
     setText("runQuestion", r.question);
     set("runMeta", [
-      "<span>" + esc(r.date) + "</span>",
-      "<span>" + esc(r.model) + "</span>",
-      "<span>" + esc(r.runtime) + "</span>",
+      "<span><b>Run date:</b> " + esc(r.date) + "</span>",
+      "<span><b>Model:</b> " + esc(r.model) + "</span>",
+      "<span><b>Runtime:</b> " + esc(r.runtime) + "</span>",
       "<span>" + r.rounds + " rounds</span>",
       "<span>" + (r.agents_acted ? r.agents_acted + " of " : "") + r.agents + " agents</span>",
       "<span>" + r.counts.posts + " posts · " + r.counts.quotes + " quotes · " + r.counts.likes + " likes · " + r.counts.follows + " follows</span>"

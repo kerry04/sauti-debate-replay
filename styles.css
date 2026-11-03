@@ -45,6 +45,12 @@ a { color: var(--blue); }
 .run-tab.active { color: var(--text); border-bottom-color: var(--blue); }
 .run-select { display: none; }
 
+/* ---------- Simulation banner + synthetic labels ---------- */
+.sim-banner { max-width: 1180px; margin: 0 auto; padding: 12px 16px; font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border); }
+.sim-banner strong { color: var(--text); letter-spacing: 0.02em; }
+.synthetic-label { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: var(--blue); border: 1px solid var(--blue); border-radius: 999px; padding: 2px 7px; white-space: nowrap; }
+.run-meta b { color: var(--text); }
+
 /* ---------- Sticky mini lean bar (phone only) ---------- */
 .lean-sticky { display: none; }
 
