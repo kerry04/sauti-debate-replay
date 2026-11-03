@@ -1,0 +1,42 @@
+{
+ "note": "Public build: named public figures and real outlets are shown as roles, so no simulated post reads as a real person's or outlet's statement. Keyed by agent id in sim_voter_cast. Labels are drawn from each persona's own stance line. selfNames: a newsroom's own outlet name inside its own posts is replaced with its role label (whole words only).",
+ "roles": {
+  "30": "Opposition coalition leader",
+  "31": "Opposition party leader",
+  "32": "The incumbent President",
+  "33": "Swing party leader",
+  "34": "Opposition-leaning governor",
+  "35": "Pro-deal party elder",
+  "36": "Opposition movement MP",
+  "37": "Opposition movement chair",
+  "38": "Movement youth lead",
+  "39": "Electoral-reform campaigner",
+  "40": "Government-side voice",
+  "41": "Government cabinet voice",
+  "42": "Digital newsroom",
+  "43": "National daily",
+  "44": "Public broadcaster",
+  "45": "Metro daily",
+  "46": "Political desk"
+ },
+ "selfNames": {
+  "42": [
+   "Citizen Digital"
+  ],
+  "43": [
+   "Nation"
+  ],
+  "44": [
+   "KBC Newsroom",
+   "KBC News",
+   "KBC"
+  ],
+  "45": [
+   "The Star"
+  ],
+  "46": [
+   "Standard Politics",
+   "Standard"
+  ]
+ }
+}

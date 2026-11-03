@@ -1,76 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sauti Debate Replay — Kenyan debate, read live</title>
-<meta name="description" content="Replay of simulated Kenyan debates, shown as a social timeline. Recorded runs, honestly labelled.">
+<title>Sauti: a simulated Kenyan debate, measured</title>
+<meta name="description" content="Sauti runs one simulated Kenyan debate three times, then changes one fact, and shows what moved. Simulated debate, not a poll.">
 <link rel="stylesheet" href="styles.css">
-<script src="config.js"></script>
 </head>
 <body>
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <div>
-        <div class="brand-name">SAUTI <span>DEBATE REPLAY</span></div>
-        <div class="brand-sub">Kenyan debate, read like a timeline</div>
-      </div>
-    </div>
-    <div class="badges">
-      <span class="mode-badge" id="modeBadge">RECORDED RUN</span>
-      <span class="mode-badge sim-badge">SIMULATED</span>
-    </div>
-  </div>
-  <nav class="page-nav" aria-label="Pages">
-    <a href="index.html" class="page-link active">Feed</a>
-    <a href="why.html" class="page-link">Why</a>
-    <a href="compare.html" class="page-link">Compare</a>
-  </nav>
-  <nav class="run-tabs" id="runTabs" aria-label="Runs"></nav>
-  <select class="run-select" id="runSelect" aria-label="Choose a run"></select>
-</header>
-
-<div class="sim-banner" role="note"><strong>Simulated debate, not a poll.</strong> Every post on this page was written by a synthetic persona in a recorded simulation — not by a real person, and not evidence about any real election.</div>
-
-<div class="lean-sticky" id="leanSticky">
-  <div class="lean-sticky-inner">
-    <span class="lean-label">ROOM LEAN</span>
-    <div class="lean-bar" id="leanBarSticky"><div class="lean-empty">Press Play</div></div>
-    <span class="lean-count" id="leanCountSticky"></span>
+<div class="strip" role="note">
+  <div class="wrap strip-in">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17.5v.5"/></svg>
+    <span><b>Simulated debate, not a poll.</b> <span id="bannerdetail"></span></span>
   </div>
 </div>
+<div class="strip sample" role="note" id="samplebanner" hidden>
+  <div class="wrap strip-in"><b>Sample data.</b> These numbers are sample data, not measured run output.</div>
+</div>
 
-<main class="feed-layout">
-  <section class="feed-col">
-    <div class="run-head">
-      <h1 id="runTitle"></h1>
-      <p class="run-question" id="runQuestion"></p>
-      <div class="run-meta" id="runMeta"></div>
+<header class="hero">
+  <div class="wrap">
+    <div class="brandrow">
+      <div class="mark" aria-hidden="true">S</div>
+      <div class="brandname">Sauti <span class="brandsub">· the debate-reading layer inside SokoResult</span></div>
+    </div>
+    <h1 class="question" id="question"></h1>
+    <div class="facts" id="facts"></div>
+  </div>
+</header>
+
+<nav class="tabbar" aria-label="Sections">
+  <div class="tabs wrap" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-tab="compare" aria-selected="true">Compare</button>
+    <button class="tab" role="tab" data-tab="debate" aria-selected="false">Debate</button>
+    <button class="tab" role="tab" data-tab="cast" aria-selected="false">Cast</button>
+    <button class="tab" role="tab" data-tab="pipeline" aria-selected="false">Pipeline</button>
+    <button class="tab" role="tab" data-tab="method" aria-selected="false">Method</button>
+  </div>
+</nav>
+
+<main class="wrap" id="main">
+  <div class="loading" id="loading">Loading run data…</div>
+
+  <!-- Compare -->
+  <section class="panel on" id="p-compare" role="tabpanel">
+    <div class="heroes">
+      <article class="card feature" id="stability"></article>
+      <article class="card feature wi" id="whatifcard"></article>
     </div>
 
-    <div class="controls" id="controls">
-      <button class="btn btn-play" id="btnPlay">▶ Play</button>
-      <button class="btn" id="btnShowAll">Show all</button>
-      <div class="speed" role="group" aria-label="Playback speed">
-        <button data-speed="1" class="speed-btn active">1×</button>
-        <button data-speed="2" class="speed-btn">2×</button>
-        <button data-speed="4" class="speed-btn">4×</button>
+    <div class="sechead">
+      <div><h2>Explore the runs</h2><p>Put any two runs side by side, or flip to the what-if.</p></div>
+      <div class="seg big" id="cmpmode" role="group" aria-label="Compare mode">
+        <button data-mode="stability" aria-pressed="true">Stability runs</button>
+        <button data-mode="whatif" aria-pressed="false">Baseline vs what-if</button>
       </div>
-      <span class="progress" id="progress"></span>
     </div>
+    <div class="selrow">
+      <label><span class="ab a">A</span><select id="selA" aria-label="Run A"></select></label>
+      <label><span class="ab b">B</span><select id="selB" aria-label="Run B"></select></label>
+    </div>
+    <div class="pair">
+      <div class="card cpanel" id="panelA"></div>
+      <div class="card cpanel" id="panelB"></div>
+    </div>
+    <div id="cmpextra"></div>
+  </section>
 
-    <div class="filters" id="filters"></div>
+  <!-- Debate -->
+  <section class="panel" id="p-debate" role="tabpanel">
+    <div class="room">
+      <div class="roomhead">
+        <div class="rh-av" aria-hidden="true">S</div>
+        <div class="rh-t"><b id="roomtitle"></b><span id="roomsub"></span></div>
+        <div class="rh-stack" id="roomstack" aria-hidden="true"></div>
+      </div>
+      <div class="roomctl">
+        <div class="seg" id="runseg" role="group" aria-label="Choose a run"></div>
+        <div class="chips" id="stancefilter" role="group" aria-label="Filter by stance"></div>
+      </div>
+      <div class="roombody">
+        <div id="briefing"></div>
+        <div id="feed" class="feed"></div>
+      </div>
+    </div>
+  </section>
 
-    <div class="feed" id="feed"></div>
-    <div class="feed-end" id="feedEnd"></div>
+  <!-- Cast -->
+  <section class="panel" id="p-cast" role="tabpanel">
+    <div class="sechead">
+      <div><h2>The cast</h2><p id="castlead"></p></div>
+      <div class="seg" id="castrun" role="group" aria-label="Choose a run"></div>
+    </div>
+    <div class="legendrow" id="castlegend"></div>
+    <div id="castbody"></div>
+  </section>
+
+  <!-- Pipeline -->
+  <section class="panel" id="p-pipeline" role="tabpanel">
+    <div class="sechead"><div><h2>From news to comparison</h2><p>Five stages. Each one names the runs it produced.</p></div></div>
+    <div class="steps" id="pipeline"></div>
+  </section>
+
+  <!-- Method -->
+  <section class="panel" id="p-method" role="tabpanel">
+    <div class="doc">
+      <div class="card docsec">
+        <h2>What Sauti is</h2>
+        <p>Sauti stages a debate between simulated Kenyans on a simulated social timeline and reads where each agent lands. Voters are invented people, built from real public posts and public data. Public figures and newsrooms are roles the model plays from public reporting. Every post is written by the model and marked SYNTHETIC.</p>
+        <p>The point is that Sauti can be tested. The same question is run several times to see whether the lean holds, then one briefing post is swapped to see what moves.</p>
+      </div>
+      <div class="card docsec">
+        <h2>How posts are labelled</h2>
+        <p>Every agent post, briefing posts excluded, gets one stance and up to three argument tags.</p>
+        <dl class="defs">
+          <dt><span class="st-chip YES">YES</span></dt><dd>Supports or affirms the question. <i>"Ruto's record earns him a second term."</i></dd>
+          <dt><span class="st-chip NO">NO</span></dt><dd>Opposes or denies the question. <i>"Ruto will not win; the opposition unites against him."</i></dd>
+          <dt><span class="st-chip CONDITIONAL">CONDITIONAL</span></dt><dd>A verdict with conditions, a yes-but, or a demand that must be met first. <i>"He can win only if he fixes the cost of living first."</i> Kept separate, never folded into YES or NO.</dd>
+          <dt><span class="st-chip OPEN">OPEN</span></dt><dd>No verdict: a question, an observation, or neutral reporting. <i>"Both sides held rallies in Nairobi today."</i></dd>
+        </dl>
+        <p>Argument tags are short, lowercase, and taken from the argument the post makes, such as "opposition unity" or "delivery record".</p>
+      </div>
+      <div class="card docsec">
+        <h2>How agents are counted</h2>
+        <p><b>Overlapping:</b> an agent counts under every stance it posted at least once. The lean bars use this, so one loud agent cannot outvote the room.</p>
+        <p><b>Majority:</b> each agent's most frequent stance, with ties shown as MIXED. Movement in the what-if is measured on majority stance, against run 1 as the baseline.</p>
+        <p><b>Raw post counts</b> are shown too, labelled as raw. They never drive the bars.</p>
+      </div>
+      <div class="card docsec">
+        <h2>Honesty rules</h2>
+        <ul>
+          <li>Simulated debate, not a poll. Nothing on this page is a statement about the real election.</li>
+          <li>Every post and every agent is marked SYNTHETIC. Voter names are invented.</li>
+          <li>Each run shows its id, model and end time. Where a value was not recorded, the page says so.</li>
+          <li>A number that has not been measured is shown as "not measured yet". Nothing is filled in.</li>
+          <li>The what-if briefing post is a hypothetical scenario, not news, and is labelled that way wherever it appears.</li>
+          <li>No tribal breakdowns are published.</li>
+        </ul>
+      </div>
+      <div class="card docsec">
+        <h2>Known caveats</h2>
+        <ul>
+          <li><b>Echo inflation.</b> Agents quote and repeat each other, so popular lines look bigger in raw post counts than in agent counts. That is why the bars count agents.</li>
+          <li><b>Model sensitivity.</b> Results depend on the model and its settings. A different model can land differently on the same cast.</li>
+          <li><b>Essay length.</b> Agents still tend to write longer than real timeline posts.</li>
+          <li><b>Late-round night silence.</b> The simulated clock has quiet night hours, so late rounds carry few posts.</li>
+          <li><b>The cast shapes the result.</b> Each voter persona names a camp. The arguments and the movement between runs carry more information than any single count.</li>
+        </ul>
+      </div>
+      <div class="card docsec">
+        <h2>Where it sits in SokoResult</h2>
+        <p>SokoResult is a Kenyan market where people trade on real-world questions. Sauti is a reading layer beside it, in shadow mode. It never sets a price, never resolves a market, and never moves money. Its weight is zero until it clears a backtest on decided markets and the founder approves.</p>
+      </div>
+      <div class="card docsec" id="datanotes" hidden></div>
+      <div class="card docsec">
+        <h2>Credits</h2>
+        <ul>
+          <li>Simulation engine: <a href="https://github.com/666ghj/MiroFish" rel="noopener">MiroFish</a>, built on OASIS, open source under AGPL-3.0. Sauti did not write the engine.</li>
+          <li>Debate and labelling model: <span id="creditmodel"></span>.</li>
+          <li>Sauti's own work: the Kenyan voice filter, the faction × age cast, the briefing posts, the engine guidance, the readout, and this page.</li>
+        </ul>
+      </div>
+    </div>
   </section>
 </main>
 
-<footer>
-  <p>Simulated posts only. <a href="why.html">Why this exists →</a></p>
-</footer>
+<footer class="foot"><div class="wrap">Simulated debate, not a poll. Every post and agent is SYNTHETIC. Sauti never sets a price, resolves a market, or moves money.</div></footer>
 
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+  <header><b id="drawer-title">Agent</b><button class="close" id="close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+  <div class="scroll" id="drawerbody"></div>
+</aside>
+
+<script src="config.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

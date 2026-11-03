@@ -1,79 +1,55 @@
-# Sauti Debate Replay
+# Sauti: simulated Kenyan debate, measured
 
-A demo module for the Meta Global AI Developer Hackathon, Startup track.
-It replays simulated Kenyan debates as a social timeline, with a live lean
-bar and a company impact panel showing what a debate reading would mean for
-SokoResult. It is a demo module only — it contains no market, pricing, or
-production code.
+A static viewer for Sauti runs. It reads one file, `data/comparison.json`, written by
+`readout.py`, and shows three things from it: whether the lean holds across repeated
+runs, what moves when one briefing post changes, and each agent's posts and stance.
 
-## What judges see
+Simulated debate, not a poll. Every post is marked SYNTHETIC. Sauti never sets a price,
+resolves a market, or moves money.
 
-- **A social feed that plays like a timeline.** Posts drop in on a timer
-  (Play/Pause, 1×/2×/4×, Show all), quotes thread under the post they
-  answer, stance filters, and a lean bar that moves as tagged posts land.
-- **All four runs, full posts, not excerpts:**
-  - Run 2 (Sifuna, 2026-10-30): 39 posts — the debate works, broken Swahili.
-  - Run 3 (Sifuna, 2026-10-31): 60 posts — voice priming, ingredients not grammar.
-  - Run 4 (Sifuna, 2026-10-31): 98 posts — grammar fixed, newsroom tone, lean flipped NO.
-  - Kalonzo (2026-11-01): 90 posts — lean opposition 53 vs government 10.
-- **A company impact panel, labelled SHADOW MODE / ILLUSTRATIVE:**
-  signal (blind and shared-keyword markets), sentiment (news vs the street),
-  and what improves. Sauti never sets prices, never resolves a market,
-  never moves money; its weight is 0 until it clears a founder-set
-  backtest bar.
-- **An improvements arc** (run 2 → run 3 → run 4 → Kalonzo) and the open
-  list: 0 follows in every run, newsroom tone, thin Sheng, lean flips as
-  artifact warnings.
-- **An honesty panel.** Every lean is a statement about that run's output,
-  never a prediction. No tribal breakdowns in any published readout.
+## Files
 
-## Honesty notes on the data
+| File | What it is |
+|---|---|
+| `index.html`, `styles.css`, `app.js` | The page. No build step, no dependencies, no network calls except `data/comparison.json`. |
+| `config.js` | One setting: `roleLabels` (on by default). Shows public figures and real newsrooms by role, so no simulated post reads as a real person's or outlet's statement. |
+| `data/comparison.json` | The only data source. Every number on the page comes from here. |
+| `tools/enrich.py` | Adds display data (cast, posts, per-agent stances, run date and runtime) next to readout.py's numbers. Never changes an existing key. |
+| `tools/test_enrich.py` | Offline checks for enrich.py's counting rules. |
+| `tools/public_roles.json` | Role labels and newsroom self-names used by `--cast`. |
+| `tools/build_preview.py` | Builds `preview.html`, the whole page in one file with the data inlined, for review in chat or email. Not for the repo. |
+| `vercel.json` | Static hosting config (unchanged from the current repo). |
 
-- Posts are simulated. Display names come from the sim cast lists; no real
-  person's posts and no real handles appear. One simulated `@handle` token
-  in run 2 was sanitised to the plain person name during extraction.
-- Stance tags follow each run's `readout.md` groupings. Where a readout
-  names post ids, those are authoritative. Where it describes groups, the
-  extractor applies that group rule. Kalonzo tags reconcile exactly to the
-  readout (53/10/19). Run 2 has 4 untagged agent posts and run 3 has 3;
-  untagged posts and seeds never move the lean bar.
-- Voice percentages are the readouts' own numbers, including their
-  methodology caveats (run 3 published vs same-method figures).
+## Data flow
+
+1. `readout.py` writes `data/comparison.json`: counts, arguments, spread, movement, seeds,
+   and per run `posts` (with stance and argument tags), `agents` (majority stance, stance
+   counts, role label) and `ended_at`.
+2. `tools/enrich.py --cast` adds the `cast` block (all 47 agents with names, roles, factions,
+   age bands, role labels and newsroom self-names). Already done in this delivery. It adds one
+   key and checks that no existing key changes.
+
+The page reads posts in readout.py's shape (`post_id`, `agent`, `step`, `content`,
+`quote_content`) and agents in its shape (`majority_stance`, `stance_counts`). A quote's own
+words are `quote_content`; `content` is the post it quotes, which the page matches to the
+briefing post or earlier post with that text to show who said it.
+
+`enrich.py --run` (posts and agents straight from run folders) is kept for future runs but is
+not needed for this file.
 
 ## Run locally
 
-No build step. Serve the folder over HTTP (the page fetches
-`data/runs.json`, which browsers block from `file://`):
-
-```sh
-python3 -m http.server 8000
-# open http://localhost:8000
+```bash
+python3 -m http.server 8000   # the page fetches data/comparison.json, which file:// blocks
 ```
 
-To regenerate `data/runs.json` from the sim databases (read-only):
+## Sample discipline
 
-```sh
-python3 tools/extract.py
-```
-
-## Deploy
-
-This is a static site. On Vercel: import this repo, no build command, no
-output directory override. `vercel.json` is already included. Deploying is
-one step and is intentionally not done by the repo itself.
-
-## Live mode (MiroFish connection)
-
-The page can read a running MiroFish backend when configured in
-`config.js`: set `window.SAUTI_LIVE.backendUrl` and `simulationId`. It then
-polls `GET {backendUrl}/api/simulation/{id}/posts` every 15 seconds and
-shows a LIVE badge. With `backendUrl: null` (the shipped default) it plays
-recorded runs and says RECORDED RUN. No keys, tokens, or cookies are used
-or stored, and no backend URL is hardcoded into the deployed build.
+If `comparison.json` has `"sample": true`, a red banner says the numbers are sample data. With
+`"sample": false` (the current file) the banner is hidden. The page code holds no fallback
+numbers; anything missing is shown as "not measured yet" or "not in the data file".
 
 ## Credits
 
-- Simulation engine: MiroFish (third-party open source, AGPL-3.0).
-- Debate model: Built with Muse Spark Open.
-- Data: four MiroFish simulation runs (Oct 30 – Nov 1, 2026), extracted
-  read-only. Nothing here writes to any production system.
+Simulation engine: MiroFish (open source, AGPL-3.0). Debate and labelling model: Meta's Muse
+Spark Open via Baseten. This repo contains no MiroFish code.
